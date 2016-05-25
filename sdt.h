@@ -56,17 +56,18 @@ int gotoTab[16][3] =
 
 int expTab[9][3] =
 {
-	/*pop goto*/
-	{ -1, -1 },
-	{ 3, 0 },//E -> E + T
-	{ 3, 0 },//E -> E - T
-	{ 1, 0 },//E -> T
-	{ 3, 2 },//T -> T * F
-	{ 3, 2 },//T -> T / F
-	{ 1, 2 },//F -> F
-	{ 3, 1 },//F -> (E)
-	{ 1, 1 } //F -> id
+	    /*pop goto*/
+	/*0*/{ -1, -1 },
+	/*1*/{ 3, 0 },//E -> E + T
+	/*2*/{ 3, 0 },//E -> E - T
+	/*3*/{ 1, 0 },//E -> T
+	/*4*/{ 3, 2 },//T -> T * F
+	/*5*/{ 3, 2 },//T -> T / F
+	/*6*/{ 1, 2 },//T -> F
+	/*7*/{ 3, 1 },//F -> (E)
+	/*8*/{ 1, 1 } //F -> id
 };
+
 
 
 actItem getAction(int s, int a)
@@ -83,15 +84,70 @@ actItem getAction(int s, int a)
 	return actionTab[s][a];
 }
 
-bool parser(string input)
+
+class valueStack
 {
-	vector<token> tokenArray = laxAnal(input);
+public:
+	valueStack(){}
+	void push(float value)
+	{
+		elem.push_back(value);
+		size++;
+		if (size!=elem.size())
+		{
+			cout << "size!=elem.size()";
+		}
+	}
+	float& operator[](int posFromTop)
+	{
+		return elem[size - posFromTop - 1];
+	}
+	void pop(int count)
+	{
+		elem.erase(elem.end() - count, elem.end());
+		size -= count;
+		if (size != elem.size())
+		{
+			cout << "size!=elem.size()";
+		}
+	}
+
+private:
+	vector<float> elem;
+	int size = 0;
+};
+
+valueStack values;
+
+void modifyStackOnR(int exp)
+{
+	switch (exp)
+	{
+	case 1:values[2] = values[2] + values[0]; values.pop(2); break;
+	case 2:values[2] = values[2] - values[0]; values.pop(2); break;
+	case 3:break;
+	case 4:values[2] = values[2] * values[0]; values.pop(2); break;
+	case 5:values[2] = values[2] / values[0]; values.pop(2); break;
+	case 6:break;
+	case 7:values[2] = values[1]; values.pop(2); break;
+	case 8:break;
+	default:cout << "error occured in modifyStackOnR"; exit(1);
+		break;
+	}
+}
+
+void sdt(string input)
+{
+	vector<tokenOnValue> tokenArray = laxAnal(input);
 	int tokenP = 0, state = 0;
 	stack<int> sta;
 	actItem actNow;
 
 	if (!tokenArray.size())
-		return 0;
+	{
+		cout << "Unacceptable words!";
+		return;
+	}
 
 	sta.push(0);
 
@@ -103,17 +159,26 @@ bool parser(string input)
 		if (actNow.act == 's')
 		{
 			sta.push(actNow.val);
+			values.push(tokenArray[tokenP].value);
 			tokenP++;
 		}
 		else if (actNow.act == 'r')
 		{
 			for (int i = 0; i < expTab[actNow.val][0]; i++)
 				sta.pop();
+			modifyStackOnR(actNow.val);
 			sta.push(gotoTab[sta.top()][expTab[actNow.val][1]]);
 		}
 		else if (actNow.act == 'a')
-			return 1;
+		{
+			/*cout final result here*/
+			cout << values[0];
+			return;
+		}
 		else
-			return 0;
+		{
+			cout << "Error expersion!";
+			return;
+		}
 	}
 }

@@ -4,6 +4,16 @@
 #include"symbol_table.h"
 using namespace std;
 
+struct tokenOnValue
+{
+	int type;
+	float value;
+};
+
+double convertToFloat(string str)
+{
+	return atof(str.c_str());
+}
 
 symbolTable symTab;
 /*
@@ -46,11 +56,12 @@ vector<token> laxAnal(string input)
 	return output;
 }*/
 
-vector<token> laxAnal(string input)
+vector<tokenOnValue> laxAnal(string input)
 {
 	int p = 0, state = 0;
-	vector<token> output;
+	vector<tokenOnValue> output;
 	token temp;
+	tokenOnValue tempOnValue;
 	char c;
 
 	while (1)
@@ -118,7 +129,9 @@ vector<token> laxAnal(string input)
 		case 4:{
 				   temp.type = 1;
 				   symTab.insert(temp);
-				   output.push_back(temp);
+				   tempOnValue.type = temp.type;
+				   tempOnValue.value = atof(temp.name.c_str());
+				   output.push_back(tempOnValue);
 				   if (c == 0)
 					   goto done;
 				   else
@@ -131,7 +144,9 @@ vector<token> laxAnal(string input)
 		case 5:{
 				   temp.type = 2;
 				   symTab.insert(temp);
-				   output.push_back(temp);
+				   tempOnValue.type = temp.type;
+				   tempOnValue.value = atof(temp.name.c_str());
+				   output.push_back(tempOnValue);
 				   if (c == 0)
 					   goto done;
 				   else
@@ -143,7 +158,9 @@ vector<token> laxAnal(string input)
 			}
 		case 6:{
 				   temp.type = 3;
-				   output.push_back(temp);
+				   tempOnValue.type = temp.type;
+				   tempOnValue.value = 0;
+				   output.push_back(tempOnValue);
 				   if (c == 0)
 					   goto done;
 				   else
@@ -152,7 +169,9 @@ vector<token> laxAnal(string input)
 			}
 		case 7:{
 				   temp.type = 4;
-				   output.push_back(temp);
+				   tempOnValue.type = temp.type;
+				   tempOnValue.value = 0;
+				   output.push_back(tempOnValue);
 				   if (c == 0)
 					   goto done;
 				   else
@@ -161,7 +180,9 @@ vector<token> laxAnal(string input)
 			}
 		case 8:{
 				   temp.type = 5;
-				   output.push_back(temp);
+				   tempOnValue.type = temp.type;
+				   tempOnValue.value = 0;
+				   output.push_back(tempOnValue);
 				   if (c == 0)
 					   goto done;
 				   else
@@ -170,7 +191,9 @@ vector<token> laxAnal(string input)
 			}
 		case 9:{
 				   temp.type = 6;
-				   output.push_back(temp);
+				   tempOnValue.type = temp.type;
+				   tempOnValue.value = 0;
+				   output.push_back(tempOnValue);
 				   if (c == 0)
 					   goto done;
 				   else
@@ -178,22 +201,26 @@ vector<token> laxAnal(string input)
 				   break;
 			}
 		case 10:{
-				temp.type = 7;
-				output.push_back(temp);
-				if (c == 0)
-					goto done;
-				else
-					state = 0;
-				break;
+					temp.type = 7;
+					tempOnValue.type = temp.type;
+					tempOnValue.value = 0;
+					output.push_back(tempOnValue);
+					if (c == 0)
+						goto done;
+					else
+						state = 0;
+					break;
 			}
 		case 11:{
-				temp.type = 8;
-				output.push_back(temp);
-				if (c == 0)
-					goto done;
-				else
-					state = 0;
-				break;
+					temp.type = 8;
+					tempOnValue.type = temp.type;
+					tempOnValue.value = 0;
+					output.push_back(tempOnValue);
+					if (c == 0)
+						goto done;
+					else
+						state = 0;
+					break;
 			}
 		case 12:{
 					c = input[p++];
@@ -217,12 +244,12 @@ vector<token> laxAnal(string input)
 		}
 	} 
 done: 
-	temp.type = 9;  
-	temp.name.clear();
-	output.push_back(temp); 
+	tempOnValue.type = 9;
+	tempOnValue.value = 0;
+	output.push_back(tempOnValue);
 	return output;
 
-	outLoop: cout << "Error Expression! ";
+	outLoop: //cout << "Error Expression! ";
 	output.clear();
 	return output;
 }

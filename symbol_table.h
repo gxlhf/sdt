@@ -41,7 +41,7 @@ void symbolTable::insert(token& input)
 {
 	tab[input.name] = input.type;
 }
-
+/*
 void symbolTable::remove(string name)
 {
 	tab.erase(name);
@@ -73,4 +73,4 @@ void symbolTable::show()
 	for (it = tab.begin(); it != tab.end(); it++)
 		cout << (*it).first << '\t' << (*it).second << endl;
 	cout << "====================" << endl;
-}
+}*/
